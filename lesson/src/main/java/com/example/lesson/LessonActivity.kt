@@ -15,6 +15,7 @@ import com.example.lesson.entity.Lesson
 
 class LessonActivity : AppCompatActivity(), BaseView<LessonPresenter?>, Toolbar.OnMenuItemClickListener {
     private val lessonPresenter = LessonPresenter(this)
+
     override fun getPresenter(): LessonPresenter? {
         return lessonPresenter
     }
@@ -27,19 +28,22 @@ class LessonActivity : AppCompatActivity(), BaseView<LessonPresenter?>, Toolbar.
         val toolbar = findViewById<Toolbar>(R.id.toolbar)
         toolbar.inflateMenu(R.menu.menu_lesson)
         toolbar.setOnMenuItemClickListener(this)
-        val recyclerView = findViewById<RecyclerView>(R.id.list)
-        recyclerView.layoutManager = LinearLayoutManager(this)
-        recyclerView.adapter = lessonAdapter
-        recyclerView.addItemDecoration(DividerItemDecoration(this, LinearLayout.VERTICAL))
-        refreshLayout = findViewById(R.id.swipe_refresh_layout)
-        refreshLayout.setOnRefreshListener(OnRefreshListener { getPresenter()!!.fetchData() })
-        refreshLayout.isRefreshing = true
+        findViewById<RecyclerView>(R.id.list).run {
+            layoutManager = LinearLayoutManager(this@LessonActivity)
+            adapter = lessonAdapter
+            addItemDecoration(DividerItemDecoration(this@LessonActivity, LinearLayout.VERTICAL))
+        }
+
+        refreshLayout = findViewById<SwipeRefreshLayout>(R.id.swipe_refresh_layout).apply {
+            setOnRefreshListener(OnRefreshListener { getPresenter()!!.fetchData() })
+            isRefreshing = true
+        }
         getPresenter()!!.fetchData()
     }
 
     internal fun showResult(lessons: List<Lesson>) {
         lessonAdapter.updateAndNotify(lessons)
-        refreshLayout.isRefreshing = false
+        refreshLayout?.isRefreshing = false
     }
 
     override fun onMenuItemClick(item: MenuItem): Boolean {
