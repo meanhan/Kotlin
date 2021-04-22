@@ -17,4 +17,5 @@ dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation project(':lesson')
     implementation project(':base')
+    implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
 }
